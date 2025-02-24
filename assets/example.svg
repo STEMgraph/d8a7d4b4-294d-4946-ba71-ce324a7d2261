@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200">
+  <!-- Hintergrundrechteck -->
+  <rect x="10" y="10" width="280" height="180" fill="lightblue" stroke="navy" stroke-width="2"/>
+  
+  <!-- Ein roter Kreis -->
+  <circle cx="150" cy="100" r="50" fill="red" stroke="black" stroke-width="2"/>
+  
+  <!-- Text im Kreis -->
+  <text x="150" y="105" font-family="Arial" font-size="20" fill="white" text-anchor="middle">
+    Hello SVG!
+  </text>
+</svg>

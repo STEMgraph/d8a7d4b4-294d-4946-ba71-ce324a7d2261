@@ -1,0 +1,148 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Damit wir per GITHUB_TOKEN auch pushen dürfen:
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Generate Files
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout des Haupt-Repositories
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Falls die Python-Skripte in einem separaten Repository liegen, kann dieses zusätzlich ausgecheckt werden:
+      - name: Checkout document-generator repository
+        uses: actions/checkout@v3
+        with:
+          repository: STEMgraph/document-generator
+          path: document_generator
+
+      # Python einrichten
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      # Python-Skripte ausführen, die die Dateien generieren
+      - name: Run Python Scripts to Generate Artifacts
+        run: |
+          python3 document_generator/parse_to_html.py challenge.stemgraph challenge.html
+          python3 document_generator/parse_to_md.py challenge.stemgraph challenge.md
+          python3 document_generator/parse_to_latex.py challenge.stemgraph challenge.tex
+
+      # Hochladen der generierten Dateien als Artefakte
+      - name: Upload Generated Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-files
+          path: |
+            challenge.html
+            challenge.md
+            challenge.tex
+
+  release-md:
+    name: Release Markdown as README.md
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download Markdown Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-files
+          path: .
+
+      - name: Rename and Commit Markdown as README.md
+        run: |
+          if [ -f challenge.md ]; then
+            mv challenge.md README.md
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "Update README.md from challenge.md" || echo "No changes to commit."
+            git push origin HEAD:main
+          else
+            echo "challenge.md not found!"
+          fi
+
+  release-latex:
+    name: Release LaTeX PDF
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download LaTeX Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-files
+          path: .
+
+      - name: Install LuaLaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive texlive-luatex
+
+      - name: Compile LaTeX File with LuaLaTeX
+        run: |
+          if [ -f challenge.tex ]; then
+            lualatex challenge.tex
+            # Es wird davon ausgegangen, dass aus challenge.tex ein PDF (challenge.pdf) generiert wird.
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add challenge.pdf
+            git commit -m "Update compiled LaTeX PDF from challenge.tex" || echo "No changes to commit."
+            git push origin HEAD:main
+          else
+            echo "challenge.tex not found!"
+          fi
+
+  release-html:
+    name: Release HTML to gh-pages
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download HTML Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-files
+          path: .
+
+      - name: Rename and Commit HTML as index.html on gh-pages branch
+        run: |
+          if [ -f challenge.html ]; then
+            mv challenge.html index.html
+            # Versuche, den gh-pages Branch auszuchecken. Falls er nicht existiert, wird er als orphan branch erzeugt.
+            git fetch origin gh-pages || true
+            git checkout gh-pages || git checkout --orphan gh-pages
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "Update gh-pages index.html from challenge.html" || echo "No changes to commit."
+            git push origin HEAD:gh-pages
+          else
+            echo "challenge.html not found!"
+          fi
