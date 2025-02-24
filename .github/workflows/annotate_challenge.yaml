@@ -1,0 +1,90 @@
+name: Annotate STEMgraph Challenge
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  annotate:
+    runs-on: ubuntu-latest
+    env:
+      # GitHub-provided variables
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      GITHUB_REF_NAME: ${{ github.ref_name }}
+      LAST_COMMIT_AUTHOR: ${{ github.event.head_commit.author.username || github.actor }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Annotate challenge JSON with repository metadata
+        run: |
+          python << 'EOF'
+          import os
+          import json
+          import uuid
+          from datetime import datetime
+
+          # Pfad zur Original-JSON-Datei (anpassen, falls erforderlich)
+          INPUT_JSON = "challenge.json"
+          OUTPUT_JSON = "annotated_challenge.json"
+
+          # Lade die Original-JSON-Datei
+          with open(INPUT_JSON, "r", encoding="utf-8") as f:
+              original = json.load(f)
+
+          # Lese Repository-Informationen aus den Environment-Variablen.
+          # GITHUB_REPOSITORY hat das Format "owner/repo"
+          repo_full = os.environ.get("GITHUB_REPOSITORY", "owner/repo")
+          repo_name = repo_full.split("/")[-1]
+
+          # Prüfe, ob repo_name eine gültige UUID ist. Falls ja, verwende sie, sonst den Fallback.
+          try:
+              valid_uuid = uuid.UUID(repo_name)
+              challenge_uuid = str(valid_uuid)
+          except ValueError:
+              challenge_uuid = "00000000-0000-0000-0000-000000000000"
+
+          # Der Autor wird aus dem GitHub-Namen des letzten Commits entnommen.
+          author = os.environ.get("LAST_COMMIT_AUTHOR", "unknown")
+
+          # Version wird aus dem Tag-Namen entnommen.
+          version = os.environ.get("GITHUB_REF_NAME", "v0.0.0")
+
+          # Verwende das aktuelle UTC-Datum als challenge date (YYYY-MM-DD)
+          challenge_date = datetime.utcnow().strftime("%Y-%m-%d")
+
+          # Lese die Lizenz aus der LICENSE-Datei (angenommen, das erste Wort ist der Lizenz-Identifikator)
+          try:
+              with open("LICENSE", "r", encoding="utf-8") as f:
+                  licence_text = f.read().strip().split()[0]
+          except Exception:
+              licence_text = "UNKNOWN"
+
+          # Baue die annotierte JSON-Struktur
+          annotated = {
+              "UUID": challenge_uuid,
+              "author": author,
+              "version": version,
+              "date": challenge_date,
+              "licence": licence_text,
+              "challenge": original["challenge"]
+          }
+
+          # Schreibe die annotierte JSON in eine Datei
+          with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+              json.dump(annotated, f, indent=4)
+
+          print(f"Annotated challenge JSON generated as {OUTPUT_JSON}")
+          EOF
+
+      - name: Upload annotated JSON as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: annotated_challenge
+          path: annotated_challenge.json

@@ -1,0 +1,24 @@
+{
+    "challenge": {
+        "learning_objective": "At the end of this challenge, the scholar will be able to use/perform/do  ......",
+        "challenge_title": "Basic Usage of the Challenge-Based-Learning Sheets for STEMgraph",
+        "challenge_description": "Challenges are a great way to learn new skills. \\n If they are selfexplanatory and atomic, they can be used by scholars in a wide range of contexts, and repeated over and over again.\\n In comparision to learning materials (like books or longer tutorials), these challenges are meant to be used by teachers, to arrange new paths through a graph of skills. \\includegraphics{./assets/example.svg} \\n \\textbf{Note:} Sometimes there needs to be a little bit of a warning or a hint for the scholar, before starting the challenge. This should go here!",
+        "steps": [
+            "Write down a skill, on a piece of paper that you really like.",
+            "Come up with a good explaination, why this skill is useful in STEM.",
+            "Explain, why this is a basic task to perform.",
+            "Think of 3 to 4 applications of this skill.",
+            "Answer the questions below.",
+            "Write a request to ChatGPT using the following prompt:\\n I am working on github.com/STEMgraph challenges.\\nToday I worked on the following:\\n<insert raw text of this challenge here>\\nPlease give me detailed feedback to my answers to the provided questions.\\nHere are my answers in the correct order:\\n<insert your answers to the tasks questions here>"
+        ],
+        "questions": [
+            "What is the skill you want to teach your scholars?",
+            "Why do you think its a foundationary skill?",
+            "What are the applications of this skill?",
+            "What prerequisites do you need to perform this skill?",
+            "What is the first step to perform this skill?",
+            "What advice do you have for the scholar at the end of this challenge?"
+        ],
+        "advice": "Let someone from your peer-group try out your challenges!\\nHave them generate issues in the github repository and let them write down how long it took them to complete the challenge.\\nA good challenge is one, that takes less than 30 minutes to complete.\\nThis way, scholars can plan their day.\\nHappy generating!"
+    }
+}

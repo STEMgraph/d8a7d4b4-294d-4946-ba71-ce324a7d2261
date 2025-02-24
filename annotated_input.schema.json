@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Annotated STEMgraph-Challenge",
+    "type": "object",
+    "properties": {
+        "UUID": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A universally unique identifier generated from the repository's name."
+        },
+        "author": {
+            "type": "string",
+            "description": "The repository's author."
+        },
+        "version": {
+            "type": "string",
+            "description": "The version generated from the tag the repository was pushed with."
+        },
+        "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The date generated from the tag's timestamp."
+        },
+        "licence": {
+            "type": "string",
+            "description": "The licence read from the repository."
+        },
+        "challenge": {
+            "type": "object",
+            "properties": {
+                "learning_objective": {
+                    "type": "string",
+                    "description": "The learning objective of the challenge."
+                },
+                "challenge_title": {
+                    "type": "string",
+                    "description": "The title of the challenge."
+                },
+                "challenge_description": {
+                    "type": "string",
+                    "description": "A description of the challenge."
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of steps for completing the challenge."
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of questions related to the challenge."
+                },
+                "advice": {
+                    "type": "string",
+                    "description": "Advice given at the end of the challenge."
+                }
+            },
+            "required": [
+                "learning_objective",
+                "challenge_title",
+                "challenge_description",
+                "steps"
+            ]
+        }
+    },
+    "required": [
+        "UUID",
+        "author",
+        "version",
+        "date",
+        "licence",
+        "challenge"
+    ]
+}

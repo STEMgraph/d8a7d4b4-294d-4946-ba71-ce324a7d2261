@@ -1,0 +1,14 @@
+name: Build and Release STEMgraph Challenge
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions: 
+  contents: write
+
+jobs:
+  call-build-release:
+    uses: STEMgraph/release_workflow/.github/workflows/release_stemgraph_challenge.yaml@v0.0.1
+    secrets: inherit
