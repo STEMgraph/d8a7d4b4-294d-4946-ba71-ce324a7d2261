@@ -71,14 +71,13 @@ Only this way the STEMgraph can ensure, that challenges are mix-and-match-able.
 \begin{lstlisting}
 I am working on github.com/STEMgraph challenges.
 Today I worked on the following:
-```
-<insert raw text of this challenge here>
-```
+\link{github.com/STEMgraph/d8a7d4b4-294d-4946-ba71-ce324a7d2261}
+
 Please give me detailed feedback to my answers to the provided questions.
 Here are my answers in the correct order:
-```
+
 <insert your answers to the tasks questions here>
-```
+
 \end{lstlisting}
 \end{enumerate}
 
